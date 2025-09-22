@@ -43,27 +43,27 @@ tile_images=[0, #the tower has no icon because it can't be deployed
              pygame.image.load("regen_piskel.png").convert_alpha(),]
 
 #2d list, [hp,speed,atk_speed,range,behaviour_id,attack_id,size,cost]
-unit_data=[[1000,0,120,300,0,0,64,-1], #0:tower
+unit_data=[[5000,0,120,300,0,0,64,-1], #0:tower
            [100,1,60,32,1,0,24,2],#1:generic fellow
            [300,0.4,120,100,2,3,36,4], #2:big boi
            [100,2,6,128,1,2,20,3], #3: speedy fellow
            [200,0.8,15,150,1,4,40,5], #4: wizard
            [500,0.1,360,300,1,5,48,5], #5: ent
-           [400,2,1200,100,1,6,16,1], #6: distractor
+           [400,2,120,100,1,6,16,1], #6: distractor
            [400,1.5,20,250,1,7,24,2], #7: archer
-           [1,1,1,1,1,1,1,7], #8: regen upgrade
+           [1,1,1,1,1,1,1,7], #8: regen upgrade (token, not supposed to be deployed)
            []
            ] 
 
 #2d list: [dmg,abs_speed,size]
-projectile_data=[[10,40,16], #0:fire or smthn idk
-                 [20,10,18], #1:strong proj idk 
+projectile_data=[[30,30,28], #0:fire or smthn idk
+                 [40,30,18], #1:strong proj idk 
                  [15,20,8], #2:bullet ig
                  [50,5,40], #3: big boi attack (very technical vocabulary)
-                 [40,10,16], #4: magic thing ig
-                 [200,5,60], #5: tree?
-                 [20,20,32], #6: laser
-                 [16,10,20], #7: arrow
+                 [40,20,16], #4: magic thing ig
+                 [400,4,60], #5: tree?
+                 [20,32,16], #6: laser
+                 [16,20,20], #7: arrow
                  []]
 
 class projectile:
@@ -346,9 +346,9 @@ def choose_options():
                 if p1_points_bar>=unit_data[p1_options[e]][7]:
                     p1_points_bar-=unit_data[p1_options[e]][7]
                     # print(unit_data[p1_options[e]],unit_data[p1_options[e]][7])
-                    p1_cooldown=60
+                    p1_cooldown=60//p2_regen_speed
                     if p1_options[e]==8:
-                        p1_regen_speed+=1
+                        p1_regen_speed+=0.6
                     else:
                         units_container.units.append(unit(random.randint(-40,40)+(screen_x/2),200,p1_options[e],False))
                     p1_options.pop(e)
@@ -362,9 +362,9 @@ def choose_options():
             if temp_p2_choices[e]:
                 if p2_points_bar>=unit_data[p2_options[e]][7]:
                     p2_points_bar-=unit_data[p2_options[e]][7]
-                    p2_cooldown=60
+                    p2_cooldown=60//p2_regen_speed
                     if p2_options[e]==8:
-                        p2_regen_speed+=1
+                        p2_regen_speed+=0.6
                     else:
                         units_container.units.append(unit(random.randint(-40,40)+(screen_x/2),screen_y-200,p2_options[e],True))
                     p2_options.pop(e)
@@ -418,8 +418,8 @@ while True:
             refill_p2_options(0)
 
     else:
-        p1_points_bar+=0.01*p1_regen_speed
-        p2_points_bar+=0.01*p2_regen_speed
+        p1_points_bar+=0.01*(p1_regen_speed+(tick/2048))
+        p2_points_bar+=0.01*(p2_regen_speed+(tick/2048))
         p1_points_bar=min(p1_points_bar,10) #why not, let spaghetti code take the wheel
         p2_points_bar=min(p2_points_bar,10)
         p1_cooldown=max(p1_cooldown-1,0)
